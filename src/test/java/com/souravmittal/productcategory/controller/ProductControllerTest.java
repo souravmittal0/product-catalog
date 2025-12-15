@@ -21,8 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProductController.class)
 class ProductControllerTest {
@@ -48,9 +47,9 @@ class ProductControllerTest {
         products.add(product1);
 
         Product product2 = new Product();
-        product2.setId(1l);
-        product2.setTitle("Product 1");
-        product2.setPrice(100.00);
+        product2.setId(2l);
+        product2.setTitle("Product 2");
+        product2.setPrice(200.00);
         product2.setCategory(new Category());
         products.add(product2);
 
@@ -62,6 +61,7 @@ class ProductControllerTest {
 
         mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[1].title").value("Product 2"))
                 .andExpect(content().string(objectMapper.writeValueAsString(productDtos)));
     }
 
@@ -79,6 +79,7 @@ class ProductControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(productDto)))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1l))
                 .andExpect(content().string(objectMapper.writeValueAsString(productDto)));
     }
 }
